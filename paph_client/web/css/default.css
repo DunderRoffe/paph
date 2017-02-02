@@ -1,0 +1,101 @@
+/*@font-face {
+  font-family: "code";
+  src: url("../fonts/code-bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "maven";
+  src: url("../fonts/Maven_Pro_Medium.otf") format("opentype");
+}*/
+
+body, html {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  top: 0px;
+}
+
+ul {
+  padding: 0px;
+  margin: 0px
+}
+
+body {
+  background-color: #83653F;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  border: 1px solid;
+  padding: 2px 8px 2px 8px;
+  background-color: #8F6634;
+}
+
+button:hover {
+  background-color: #B48244;
+}
+
+#mainContainer {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+}
+
+#topBar {
+  width: 50%;
+  display: block;
+  border: 1px solid;
+  padding: 10px 5px 10px 5px;
+  margin: 1px 1px 1px 1px;
+}
+
+.frame {
+  position: relative;
+  vertical-align: top;
+  display: inline-block;
+  border: 1px solid;
+  padding: 10px 5px 10px 5px;
+  margin: 1px 1px 1px 1px;
+  min-width: 265px;
+}
+
+.frame:hover {
+  border-color: #b48244;
+}
+
+.frame-heading {
+  border-bottom: 1px solid;
+}
+
+.frame-heading span {
+  margin-right: 10px;
+}
+
+.frame-buttons {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+}
+
+.frame-buttons a {
+ float: right;
+ color: #000;
+ font-size: 1.2em;
+}
+
+.frame-buttons a:hover {
+ text-decoration: underline;
+}
+
+.frame-content {
+  margin-top: 15px;
+  min-height: 20px;
+}
