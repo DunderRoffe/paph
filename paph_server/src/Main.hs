@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 
 import Handshake
+import Message
 import Data
 
 import Data.Monoid (mappend)
@@ -21,22 +22,8 @@ data ServerState = ServerState {
   available :: [Int]
   }
 
-data Message = PLZ
-             | Available  { ids :: [Int] }
-             | Connect    { id :: Int } 
-             | Disconnect
-             | Get        { id :: Int } 
-             | Update     { contents :: [Data] }
-             | Delete     { content :: Data } 
-             | Create     { id :: Int }
-  deriving (Show, Generic)
-
 data Package = Message [Message]
   deriving (Show, Generic)
-
-instance FromJSON Message
-
-instance ToJSON Message
 
 newServerState :: ServerState
 newServerState = ServerState [] [1,2,3]
