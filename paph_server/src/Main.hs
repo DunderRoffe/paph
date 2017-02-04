@@ -9,7 +9,7 @@ import Data.Monoid (mappend)
 import Data.Text (Text)
 import Data.Aeson
 import Control.Exception (finally)
-import Control.Monad (forM_, forever)
+import Control.Monad (forM_, forever, unless)
 import Control.Concurrent (MVar, newMVar, modifyMVar_, modifyMVar, readMVar)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as T
@@ -25,14 +25,19 @@ application :: MVar ServerState -> WS.ServerApp
 application state pending = do
     conn <- WS.acceptRequest pending
     WS.forkPingThread conn 30
-    jsonMsg <- WS.receiveData conn
+    waitForMessage PLZ
     s <- liftIO $ readMVar state
-    case decode jsonMsg of
-        Just (PLZ) -> do
-          print "Got plz"
-          WS.sendTextData conn (encode (Available (available s)))
-          handshake conn state
-        _ -> putStrLn $ "Got '" ++ show jsonMsg ++ "' which can not be parsed to either PLZ or Connect"
+    WS.sendTextData conn (encode (Available (available s)))
+    handshake conn state
+
+waitForMessage msg = do
+    putStrLn $ "Waiting for a " ++ show msg
+    jsonMsg <- WS.receiveData conn
+
+    let recievedMsg = decode jsonMsg
+    unless (msg == recievedMsg) do
+        putStrLn "Ignoring unexpected msg: " ++ show recievedMsg
+        waitForMessage msg
 
 disconnect :: Client -> MVar ServerState -> IO ()
 disconnect client state = do
