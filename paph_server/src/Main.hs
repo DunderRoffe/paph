@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 import Handshake
 import Message
@@ -14,16 +14,12 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Network.WebSockets as WS
-import GHC.Generics
 
 type Client = (Int, WS.Connection)
 data ServerState = ServerState {
   clients :: [Client],
   available :: [Int]
   }
-
-data Package = Message [Message]
-  deriving (Show, Generic)
 
 newServerState :: ServerState
 newServerState = ServerState [] [1,2,3]
