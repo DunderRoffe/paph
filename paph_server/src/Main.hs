@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 
 import Handshake
+import Data
 
 import Data.Monoid (mappend)
 import Data.Text (Text)
@@ -20,9 +21,6 @@ data ServerState = ServerState {
   available :: [Int]
   }
 
-data Data = SLP | RP | INFO | ARK
-  deriving (Show, Generic)
-
 data Message = PLZ
              | Available  { ids :: [Int] }
              | Connect    { id :: Int } 
@@ -36,10 +34,8 @@ data Message = PLZ
 data Package = Message [Message]
   deriving (Show, Generic)
 
-instance FromJSON Data
 instance FromJSON Message
 
-instance ToJSON Data
 instance ToJSON Message
 
 newServerState :: ServerState
