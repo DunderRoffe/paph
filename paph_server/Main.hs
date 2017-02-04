@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 
+import Handshake
+
 import Data.Monoid (mappend)
 import Data.Text (Text)
 import Data.Aeson
@@ -84,22 +86,6 @@ disconnect client state = do
   modifyMVar state $ \s ->  let s' = removeClient client s in return (s', s')
   putStrLn (show (fst client) ++ " has disconnected" )
 
-handshake :: WS.Connection -> MVar ServerState -> IO ()
-handshake conn state = do
-  print "Waiting for handshake"
-  jsonMsg <- WS.receiveData conn
-  case decode jsonMsg of
-    Just (Connect vid) -> let client = (vid, conn) in
-           flip finally (disconnect client state) $ do
-           WS.sendTextData conn (encode (Connect vid))
-           print $ "A user has claimed slot " ++ show vid
-           liftIO $ modifyMVar_ state $ \s -> do
-               let s' = addClient client s
---               WS.sendTextData conn $ T.pack "Welcome to the server: "
-               return s'
-           clientHandler conn state (vid, conn)
-    _ -> putStrLn $ "Illegal handshake, Did not receive a Connect"
-  
 
 clientHandler :: WS.Connection -> MVar ServerState -> Client -> IO ()
 clientHandler conn state client = do
