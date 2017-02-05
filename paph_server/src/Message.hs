@@ -2,6 +2,7 @@
 
 module Message where
 
+import Data
 import Data.Aeson
 import GHC.Generics
 
@@ -13,7 +14,7 @@ data Message = Ready
              | Update     { contents :: [Data] }
              | Delete     { content :: Data } 
              | Create     { id :: Int }
-  deriving (Show, Generic)
+  deriving (Show, Generic, Eq)
 
 instance FromJSON Message
 instance ToJSON Message

@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Handshake
 import Message
 import Data
 import ServerState
@@ -25,19 +24,19 @@ application :: MVar ServerState -> WS.ServerApp
 application state pending = do
     conn <- WS.acceptRequest pending
     WS.forkPingThread conn 30
-    waitForMessage Ready
+    waitForMessage Ready conn
     s <- liftIO $ readMVar state
     WS.sendTextData conn (encode (Available (available s)))
     handshake conn state
 
-waitForMessage msg = do
-    putStrLn $ "Waiting for a " ++ show msg
+waitForMessage msgMatch conn = do
+    putStrLn $ "Waiting for a " ++ show msgMatch
     jsonMsg <- WS.receiveData conn
 
-    let recievedMsg = decode jsonMsg
-    unless (msg == recievedMsg) do
-        putStrLn "Ignoring unexpected msg: " ++ show recievedMsg
-        waitForMessage msg
+    let (Just recievedMsg) = decode jsonMsg
+    unless (msgMatch == recievedMsg) $ do
+        putStrLn $ "Ignoring unexpected msg: " ++ show recievedMsg
+        waitForMessage msgMatch conn
 
 disconnect :: Client -> MVar ServerState -> IO ()
 disconnect client state = do
@@ -53,3 +52,19 @@ clientHandler conn state client = do
             liftIO $ readMVar state >>= broadcast msg
             clientHandler conn state client
         Nothing -> clientHandler conn state client
+
+handshake :: WS.Connection -> MVar ServerState -> IO ()
+handshake conn state = do
+  print "Waiting for handshake"
+  jsonMsg <- WS.receiveData conn
+  case decode jsonMsg of
+    Just (Connect vid) -> let client = (vid, conn) in
+           flip finally (disconnect client state) $ do
+           WS.sendTextData conn (encode (Connect vid))
+           print $ "A user has claimed slot " ++ show vid
+           liftIO $ modifyMVar_ state $ \s -> do
+               let s' = addClient client s
+--               WS.sendTextData conn $ T.pack "Welcome to the server: "
+               return s'
+           clientHandler conn state (vid, conn)
+    _ -> putStrLn $ "Illegal handshake, Did not receive a Connect"
