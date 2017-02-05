@@ -41,15 +41,15 @@ waitForMessage msg = do
 
 disconnect :: Client -> MVar ServerState -> IO ()
 disconnect client state = do
-  modifyMVar state $ \s ->  let s' = removeClient client s in return (s', s')
-  putStrLn (show (fst client) ++ " has disconnected" )
+    modifyMVar state $ \s ->  let s' = removeClient client s in return (s', s')
+    putStrLn (show (fst client) ++ " has disconnected" )
 
 clientHandler :: WS.Connection -> MVar ServerState -> Client -> IO ()
 clientHandler conn state client = do
     jsonMsg <- WS.receiveData conn
     case decode jsonMsg of
-      Just Disconnect -> return ()
-      Just msg -> do
-        liftIO $ readMVar state >>= broadcast msg
-        clientHandler conn state client
-      Nothing -> clientHandler conn state client
+        Just Disconnect -> return ()
+        Just msg -> do
+            liftIO $ readMVar state >>= broadcast msg
+            clientHandler conn state client
+        Nothing -> clientHandler conn state client
