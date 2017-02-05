@@ -5,7 +5,7 @@ module Message where
 import Data.Aeson
 import GHC.Generics
 
-data Message = PLZ
+data Message = Ready
              | Available  { ids :: [Int] }
              | Connect    { id :: Int } 
              | Disconnect

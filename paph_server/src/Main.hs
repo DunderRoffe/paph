@@ -25,7 +25,7 @@ application :: MVar ServerState -> WS.ServerApp
 application state pending = do
     conn <- WS.acceptRequest pending
     WS.forkPingThread conn 30
-    waitForMessage PLZ
+    waitForMessage Ready
     s <- liftIO $ readMVar state
     WS.sendTextData conn (encode (Available (available s)))
     handshake conn state
