@@ -8,7 +8,7 @@ import Data.Monoid (mappend)
 import Data.Text (Text)
 import Data.Aeson
 import Control.Exception (finally)
-import Control.Monad (forM_, forever, unless)
+import Control.Monad (unless)
 import Control.Concurrent (MVar, newMVar, modifyMVar_, modifyMVar, readMVar)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as T
