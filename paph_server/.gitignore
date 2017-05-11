@@ -2,3 +2,5 @@ dist
 node_modules
 *.swp
 *.swo§
+.cabal-sandbox
+cabal.sandbox.config
