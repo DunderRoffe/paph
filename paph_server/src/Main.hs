@@ -30,6 +30,8 @@ application state pending = do
        connect client state
        clientHandler client state
 
+-- | Waits until a specific message is recieved on the given connection.
+waitForMessage :: Message -> WS.Connection -> IO ()
 waitForMessage msgMatch conn = do
     putStrLn $ "Waiting for a " ++ show msgMatch
     jsonMsg <- WS.receiveData conn
