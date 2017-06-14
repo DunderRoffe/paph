@@ -6,7 +6,7 @@ import ServerState
 
 import Data.Aeson
 import Control.Monad (unless)
-import Control.Concurrent (MVar, modifyMVar_, modifyMVar, readMVar)
+import Control.Concurrent (MVar, modifyMVar_, readMVar)
 import Control.Monad.IO.Class (liftIO)
 import qualified Network.WebSockets as WS
 
@@ -27,13 +27,12 @@ connect :: Client -> MVar ServerState -> IO ()
 connect client@(vid, conn) state = do
     WS.sendTextData conn (encode (Connect vid))
     print $ "A user has claimed slot " ++ show vid
-    liftIO $ modifyMVar_ state $ \s ->
-        return $ addClient client s
+    modifyMVar_ state $ return . addClient client
 
 -- | Disconnect a client from the server
 disconnect :: Client -> MVar ServerState -> IO ()
 disconnect client state = do
-    modifyMVar state $ \s ->  let s' = removeClient client s in return (s', s')
+    modifyMVar_ state $ return . removeClient client
     putStrLn $ show (fst client) ++ " has disconnected"
 
 -- | Handles requests for a client.
@@ -54,7 +53,7 @@ handshake :: WS.Connection -> MVar ServerState -> IO Client
 handshake conn state = do
     -- Wait for a Ready message and then respond with available spots
     waitForMessage Ready conn
-    s <- liftIO $ readMVar state
+    s <- readMVar state
     WS.sendTextData conn (encode (Available (available s)))
 
     -- Next message needs to be a Connect
